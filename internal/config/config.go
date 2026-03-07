@@ -13,6 +13,20 @@ type Config struct {
 	DBPath     string
 }
 
+// LogSafe returns a map of config fields safe for logging (secrets masked).
+func (c *Config) LogSafe() map[string]interface{} {
+	mask := func(s string) string {
+		if s == "" {
+			return ""
+		}
+		return "***"
+	}
+	return map[string]interface{}{
+		"db_path":     c.DBPath,
+		"discord_key": mask(c.DiscordKey),
+	}
+}
+
 // Load loads environment variables and returns a Config.
 // If path is non-empty, it loads from that file and returns an error if the file cannot be loaded.
 // If path is empty, it optionally loads .env from the current working directory; if no .env file

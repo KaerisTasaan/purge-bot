@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"regexp"
 	"strconv"
 	"strings"
@@ -13,14 +14,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm"
 )
-
-// Logger provides leveled logging. If nil, log calls are no-ops.
-type Logger interface {
-	Debug(msg string, keyvals ...interface{})
-	Info(msg string, keyvals ...interface{})
-	Warn(msg string, keyvals ...interface{})
-	Error(msg string, keyvals ...interface{})
-}
 
 // MessageFetcherDeleter abstracts Discord message operations for testing.
 type MessageFetcherDeleter interface {
@@ -43,8 +36,8 @@ type Bot struct {
 	maxDuration             time.Duration
 	minDuration             time.Duration
 	messageAPI              MessageFetcherDeleter
-	session                 *discordgo.Session // Kept for non-purge operations (permissions, etc.)
-	log                     Logger
+	session                 *discordgo.Session   // Kept for non-purge operations (permissions, etc.)
+	log                     *slog.Logger         // If nil, log calls are no-ops.
 	permErrorLastLog        map[string]time.Time // channelID -> last time we logged permission error
 	permErrorMu             sync.Mutex
 }
@@ -102,7 +95,7 @@ func (b *Bot) SetSession(s *discordgo.Session) {
 }
 
 // SetLogger sets the logger. If nil, logging is a no-op.
-func (b *Bot) SetLogger(l Logger) {
+func (b *Bot) SetLogger(l *slog.Logger) {
 	b.log = l
 }
 
@@ -135,11 +128,13 @@ func (b *Bot) logDebug(msg string, keyvals ...interface{}) {
 		b.log.Debug(msg, keyvals...)
 	}
 }
+
 func (b *Bot) logInfo(msg string, keyvals ...interface{}) {
 	if b.log != nil {
 		b.log.Info(msg, keyvals...)
 	}
 }
+
 func (b *Bot) logWarn(msg string, keyvals ...interface{}) {
 	if b.log != nil {
 		b.log.Warn(msg, keyvals...)
@@ -1126,7 +1121,7 @@ func (b *Bot) checkUserPermission(s *discordgo.Session, guildID, userIDOrName st
 		// Check user-specific permissions with the resolved user ID
 		if queryErr := b.db.Where("guild_id = ? AND user_id = ?", guildID, userID).First(&permission).Error; queryErr == nil {
 			return permission.CanPurge
-		} else if queryErr != nil && !errors.Is(queryErr, gorm.ErrRecordNotFound) {
+		} else if !errors.Is(queryErr, gorm.ErrRecordNotFound) {
 			b.logWarn("permission check: user query failed", "guild_id", guildID, "user_id", userID, "error", queryErr)
 		}
 
