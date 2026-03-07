@@ -1183,7 +1183,7 @@ func (b *Bot) listRolePermissions(s *discordgo.Session, guildID string) ([]strin
 	for _, permission := range permissions {
 		role, err := s.State.Role(guildID, permission.RoleID)
 		if err != nil {
-			// Attempt to fetch the role if not present in the state
+			// Attempt to fetch the role if not present in the state (e.g. deleted role not in guild.Roles)
 			for _, r := range guild.Roles {
 				if r.ID == permission.RoleID {
 					role = r
@@ -1191,7 +1191,7 @@ func (b *Bot) listRolePermissions(s *discordgo.Session, guildID string) ([]strin
 				}
 			}
 		}
-		if role.ID == "" {
+		if role == nil || role.ID == "" {
 			roles = append(roles, fmt.Sprintf("%s (unknown name)", permission.RoleID))
 		} else {
 			roles = append(roles, fmt.Sprintf("%s (%s)", role.ID, role.Name))
