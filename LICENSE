@@ -1,10 +1,13 @@
 MIT License
 
+This project is a fork of PurgeBot by Innokentiy Sokolov
+(https://github.com/keshon/purge-bot). The original software is:
+
 Copyright (c) 2024 Innokentiy Sokolov
 
-Project: PurgeBot
-Author: Innokentiy Sokolov
-Contact: keshon@zoho.com
+Modifications and the codebase as maintained in this repository are:
+
+Copyright (c) 2025 Kaeris Tasaan
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

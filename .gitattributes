@@ -1,0 +1,16 @@
+# Default: normalize line endings to LF (CI/Docker run on Linux).
+* text=auto eol=lf
+
+# Windows batch scripts: keep CRLF.
+*.bat text eol=crlf
+
+# Explicitly mark known text types (backup if auto-detection misclassifies).
+*.go text
+*.md text
+*.yml text
+*.yaml text
+*.sh text
+*.json text
+Dockerfile text
+.gitignore text
+.env.example text
