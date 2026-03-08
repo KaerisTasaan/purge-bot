@@ -55,11 +55,11 @@ You can set `DISCORD_KEY` in the environment instead of using `.env`, or use a `
 
 When running the binary directly (not Docker):
 
+- `-version`: Print version and exit.
 - `-env`: Path to `.env` file. If omitted, the bot loads `.env` from the current working directory or uses environment variables.
 - `-db`: Path to database file. Default: `database.db`.
 - `-log-level`: `debug`, `info`, `warn`, `error`. Default: `info`.
 - `-log-format`: `text` or `json`. Default: `text`.
-- `-log-file`: Optional log file path (size-based rotation).
 
 Examples:
 
@@ -108,6 +108,8 @@ Run tests the same way as CI (so you catch the same failures locally):
 
 ## 📜 Commands
 
+**Who can run commands:** Purge, stop, list, threads, and help are available to **server owners**, **administrators**, and to any **user or role** that an admin has granted permission (via adduser/addrole). Only **server owners and administrators** may run adduser, removeuser, addrole, removerole, adduserid, removeuserid, addroleid, removeroleid, and listpermissions.
+
 ### Purge Old Messages
 
 Automatically purge old messages in the channel. You can use a bare duration or the `messages` subcommand.
@@ -138,7 +140,7 @@ Get a list of all channels with active purge tasks in the guild.
 
 ### Add User
 
-Grant a user permission to manage purge tasks. You can use either username or user ID.
+Grant a user permission to manage purge tasks. You can use either username or user ID. Username matches the first user found in the guild member list; for accuracy prefer `adduserid` with a user ID.
 
 - **Usage:** `@PurgeBot adduser <username>` or `@PurgeBot adduserid <userID>`
 - **Example:** `@PurgeBot adduser JohnDoe` or `@PurgeBot adduserid 339767128292982785`
@@ -184,11 +186,10 @@ Get detailed usage instructions and a list of available commands.
 
 ### Docker health check
 
-When running PurgeBot in a Docker container (e.g. with Docker Compose), the bot listens on a Unix socket for health checks. The healthcheck runs the same binary in one-shot mode: `purgebot healthcheck` connects to the socket and exits 0 (healthy) or 1 (unhealthy).
+The container healthcheck runs the same binary in one-shot mode: `purgebot healthcheck`. It exits 0 (healthy) or 1 (unhealthy).
 
-- **Socket:** Default path `/tmp/purgebot-health.sock`; override with `HEALTH_SOCKET`. **Unix/Linux only** (Docker on Windows runs Linux containers). Use the default for a single process/container; set `HEALTH_SOCKET` if running multiple instances on the same host.
-- **(a)** The container may report **unhealthy during the start period** until Discord Ready (and Ready() completion); that is expected.
-- **(b) Liveness:** The bot runs a periodic heartbeat (e.g. every 60s) to Discord. If Discord is unreachable for longer than maxIdle (e.g. 2.5 min), the healthcheck transitions to unhealthy so the container can be restarted.
+- The container may report **unhealthy during the start period** until Discord Ready (and Ready() completion); that is expected.
+- **Liveness:** The bot runs a periodic heartbeat (e.g. every 60s) to Discord. If Discord is unreachable for longer than maxIdle (e.g. 2.5 min), the healthcheck transitions to unhealthy so the container can be restarted.
 
 ## 🗳️ Invite the Bot
 
