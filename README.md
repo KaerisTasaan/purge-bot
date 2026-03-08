@@ -182,6 +182,14 @@ Get detailed usage instructions and a list of available commands.
 - **Minimum Duration**: The minimum duration for purging tasks (default: 30 seconds).
 - **Maximum Duration**: The maximum duration for purging tasks (default: 3333 days).
 
+### Docker health check
+
+When running PurgeBot in a Docker container (e.g. with Docker Compose), the bot listens on a Unix socket for health checks. The healthcheck runs the same binary in one-shot mode: `purgebot healthcheck` connects to the socket and exits 0 (healthy) or 1 (unhealthy).
+
+- **Socket:** Default path `/tmp/purgebot-health.sock`; override with `HEALTH_SOCKET`. **Unix/Linux only** (Docker on Windows runs Linux containers). Use the default for a single process/container; set `HEALTH_SOCKET` if running multiple instances on the same host.
+- **(a)** The container may report **unhealthy during the start period** until Discord Ready (and Ready() completion); that is expected.
+- **(b) Liveness:** The bot runs a periodic heartbeat (e.g. every 60s) to Discord. If Discord is unreachable for longer than maxIdle (e.g. 2.5 min), the healthcheck transitions to unhealthy so the container can be restarted.
+
 ## 🗳️ Invite the Bot
 
 To invite **PurgeBot** to your server, use the following invite link format:

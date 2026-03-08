@@ -5,6 +5,12 @@ services:
     volumes:
       - purgebot-data:/data
     env_file: .env
+    healthcheck:
+      test: ["CMD", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
 
 volumes:
   purgebot-data:

@@ -40,6 +40,7 @@ type Bot struct {
 	log                     *slog.Logger         // If nil, log calls are no-ops.
 	permErrorLastLog        map[string]time.Time // channelID -> last time we logged permission error
 	permErrorMu             sync.Mutex
+	onReady                 func() // Optional callback when Discord Ready completes (no early return).
 }
 
 // Task represents a purge task stored in the database.
@@ -97,6 +98,12 @@ func (b *Bot) SetSession(s *discordgo.Session) {
 // SetLogger sets the logger. If nil, logging is a no-op.
 func (b *Bot) SetLogger(l *slog.Logger) {
 	b.log = l
+}
+
+// SetOnReady sets a callback invoked when the Discord Ready event completes successfully
+// (at the end of Ready(), after migrations and task restore; not called on early return).
+func (b *Bot) SetOnReady(f func()) {
+	b.onReady = f
 }
 
 // Stop stops all purge and thread cleanup tickers and releases resources.
@@ -241,6 +248,9 @@ func (b *Bot) Ready(s *discordgo.Session, event *discordgo.Ready) {
 	}
 
 	b.logInfo("ready: restored tasks", "message_purge_tasks", len(tasks), "thread_cleanup_tasks", len(threadTasks))
+	if b.onReady != nil {
+		b.onReady()
+	}
 }
 
 // isBotMentionPrefix returns true if content (after trimming leading/trailing space)

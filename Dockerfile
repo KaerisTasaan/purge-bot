@@ -15,4 +15,8 @@ RUN apk add --no-cache ca-certificates && mkdir -p /data && chown nobody:nobody 
 COPY --from=builder /purgebot /purgebot
 
 USER nobody
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD ["healthcheck"]
+
 ENTRYPOINT ["/purgebot", "-db", "/data/database.db"]
