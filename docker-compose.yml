@@ -6,7 +6,7 @@ services:
       - purgebot-data:/data
     env_file: .env
     healthcheck:
-      test: ["CMD", "healthcheck"]
+      test: ["CMD", "/purgebot", "healthcheck"]
       interval: 30s
       timeout: 5s
       start_period: 15s

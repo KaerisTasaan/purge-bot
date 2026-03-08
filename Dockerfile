@@ -17,6 +17,6 @@ COPY --from=builder /purgebot /purgebot
 USER nobody
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD ["healthcheck"]
+  CMD ["/purgebot", "healthcheck"]
 
 ENTRYPOINT ["/purgebot", "-db", "/data/database.db"]
