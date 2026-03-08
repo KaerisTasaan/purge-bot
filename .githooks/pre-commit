@@ -8,6 +8,15 @@ if ! go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.10.1 run .
 	exit 1
 fi
 
+echo "Running deadcode (unreachable functions)..."
+out=$(go run golang.org/x/tools/cmd/deadcode@latest -test ./... 2>&1) || true
+echo "$out"
+if echo "$out" | grep -q "unreachable func"; then
+	echo "Deadcode failed (unreachable functions found)."
+	exit 1
+fi
+echo "No unreachable functions found."
+
 echo "Running tests..."
 if ! go test ./... -count=1; then
 	echo "Tests failed."

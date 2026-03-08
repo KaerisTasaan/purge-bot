@@ -33,6 +33,16 @@ jobs:
           version: v2.10.1
           args: ./...
 
+      - name: deadcode (unreachable functions)
+        run: |
+          out=$(go run golang.org/x/tools/cmd/deadcode@latest -test ./... 2>&1) || true
+          echo "$out"
+          if echo "$out" | grep -q "unreachable func"; then
+            echo "::error::Unreachable functions found (see output above)"
+            exit 1
+          fi
+          echo "No unreachable functions found."
+
   test:
     name: test
     runs-on: ubuntu-latest

@@ -1,0 +1,19 @@
+# Validate PR title against Conventional Commits. The merge into main (e.g. squash)
+# uses the PR title as the commit message, which github-tag-action uses for version bumping.
+name: Lint Commits
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+    branches: [main]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

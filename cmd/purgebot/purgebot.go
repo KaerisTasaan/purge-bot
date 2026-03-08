@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -12,6 +13,7 @@ import (
 	"github.com/keshon/purge-bot/internal/bot"
 	"github.com/keshon/purge-bot/internal/config"
 	"github.com/keshon/purge-bot/internal/logutil"
+	"github.com/keshon/purge-bot/internal/version"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -30,11 +32,17 @@ func (a *discordgoAdapter) ChannelMessageDelete(channelID, msgID string) error {
 }
 
 func main() {
+	ver := flag.Bool("version", false, "print version")
 	envPath := flag.String("env", "", "Path to .env file (empty = load from current working directory)")
 	dbPath := flag.String("db", "database.db", "Path to database file")
 	logLevel := flag.String("log-level", "info", "Log level: debug, info, warn, error")
 	logFormat := flag.String("log-format", "text", "Log format: text or json")
 	flag.Parse()
+
+	if *ver {
+		fmt.Println(version.Version)
+		os.Exit(0)
+	}
 
 	level := logutil.ParseLogLevel(*logLevel)
 	format := strings.ToLower(strings.TrimSpace(*logFormat))

@@ -1,9 +1,4 @@
 package version
 
-var (
-	BuildDate      string
-	GoVersion      string
-	AppName        = "PurgeBot"
-	AppFullName    = "PurgeBot - Autodeletion Discord Bot"
-	AppDescription = "Automatically purging old messages from Discord channels based on specified duration"
-)
+// Version is set at build time via ldflags (e.g. -ldflags="-X '...Version=v1.0.0'").
+var Version = "dev"
