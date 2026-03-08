@@ -59,6 +59,4 @@ jobs:
         run: go mod download && go mod verify
 
       - name: test
-        env:
-          CGO_ENABLED: "1"
         run: go test -v ./... -count=1

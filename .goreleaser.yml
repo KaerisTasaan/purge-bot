@@ -1,4 +1,4 @@
-# GoReleaser: build for linux/amd64 only (CGO/sqlite; native build on runner).
+# GoReleaser: build for linux/amd64 (pure Go; no CGO).
 version: 2
 
 project_name: purgebot
@@ -8,8 +8,6 @@ builds:
     main: ./cmd/purgebot
     ldflags:
       - -X github.com/keshon/purge-bot/internal/version.Version={{.Version}}
-    env:
-      - CGO_ENABLED=1
     goos:
       - linux
     goarch:

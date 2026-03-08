@@ -1,19 +1,16 @@
 # First stage: build the Go application
 FROM golang:1.23-alpine3.20 AS build
 
-RUN apk add --no-cache build-base
 ADD src /usr/project
 WORKDIR /usr/project
 
 # Combine commands for better layer caching
 RUN GO_VERSION=$(go version | awk '{print $3}') && \
     BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ") && \
-    CGO_ENABLED=1 && \
     rm -f .env && \
     go build -o app -ldflags "-X 'github.com/keshon/purge-bot/internal/version.BuildDate=${BUILD_DATE}' -X 'github.com/keshon/purge-bot/internal/version.GoVersion=${GO_VERSION}'" cmd/purgebot/purgebot.go && \
     touch database.db && \
-    apk del build-base && \
-    rm -rf /var/cache/apk/* && \
+    rm -rf /var/cache/apk/* 2>/dev/null || true && \
     rm -rf /usr/share/man
 
 # Second stage: create the final image

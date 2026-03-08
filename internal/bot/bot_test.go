@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -210,7 +210,7 @@ func TestPurgeChannel(t *testing.T) {
 	// Setup in-memory database
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	if err != nil {
-		t.Skipf("Skipping: database requires CGO/sqlite: %v", err)
+		t.Fatalf("open database: %v", err)
 	}
 
 	// Create mock that returns messages older than threshold
@@ -259,7 +259,7 @@ func TestPurgeChannelWithFetchError(t *testing.T) {
 	// Setup in-memory database
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	if err != nil {
-		t.Skipf("Skipping: database requires CGO/sqlite: %v", err)
+		t.Fatalf("open database: %v", err)
 	}
 
 	mockAPI := &mockMessageFetcherDeleter{
@@ -279,7 +279,7 @@ func TestPurgeChannelWithDeleteError(t *testing.T) {
 	// Setup in-memory database
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	if err != nil {
-		t.Skipf("Skipping: database requires CGO/sqlite: %v", err)
+		t.Fatalf("open database: %v", err)
 	}
 
 	oldTime := time.Now().Add(-2 * time.Hour)
@@ -365,7 +365,7 @@ func (m *mockMessageFetcherDeleterWithFetchCount) ChannelMessages(channelID stri
 func TestPurgeChannelContextCancellation(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	if err != nil {
-		t.Skipf("Skipping: database requires CGO/sqlite: %v", err)
+		t.Fatalf("open database: %v", err)
 	}
 	mockAPI := &mockMessageFetcherDeleterWithFetchCount{
 		mockMessageFetcherDeleter: mockMessageFetcherDeleter{
@@ -384,7 +384,7 @@ func TestPurgeChannelContextCancellation(t *testing.T) {
 func TestStopIdempotent(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	if err != nil {
-		t.Skipf("Skipping: database requires CGO/sqlite: %v", err)
+		t.Fatalf("open database: %v", err)
 	}
 	bot := NewBot(db, &mockMessageFetcherDeleter{})
 	bot.Stop()

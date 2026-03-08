@@ -10,11 +10,11 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/glebarez/sqlite"
 	"github.com/keshon/purge-bot/internal/bot"
 	"github.com/keshon/purge-bot/internal/config"
 	"github.com/keshon/purge-bot/internal/logutil"
 	"github.com/keshon/purge-bot/internal/version"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
