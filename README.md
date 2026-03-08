@@ -9,81 +9,83 @@ Welcome to **PurgeBot**! This bot helps manage and clean up your Discord server 
 - **List Purge Tasks**: Get a list of all active purge tasks in your guild.
 - **Add or Remove Users/Roles**: Grant or revoke permission for specific users or roles to manage purge tasks.
 
-## 🛠️ Setup
+## Prerequisites
 
-### 1. Prerequisites
+- **Docker and Docker Compose** (recommended), or Go installed locally
+- **Discord Bot Token**: Create a bot on [Discord Developer Portal](https://discord.com/developers/applications) and get your token
+- The bot uses SQLite for database storage (no separate install when using Docker)
 
-- **Go**: Ensure you have Go installed on your system.
-- **Discord Bot Token**: Create a bot on [Discord Developer Portal](https://discord.com/developers/applications) and get your token.
-- **SQLite**: The bot uses SQLite for database storage.
+## Setup
 
-### 2. Installation
+### 1. Clone the repository
 
-1. **Clone the repository:**
+```bash
+git clone https://github.com/keshon/purge-bot.git
+cd purge-bot
+```
 
-    ```bash
-    git clone https://github.com/keshon/purge-bot.git
-    cd purge-bot
-    ```
+### 2. Configure environment
 
-2. **Install dependencies:**
+```bash
+cp .env.example .env
+```
 
-    ```bash
-    go mod tidy
-    ```
+Edit `.env` and set `DISCORD_KEY` to your Discord bot token.
 
-3. **Set up your environment:**
+### 3. Run
 
-    Provide your Discord bot token in one of these ways:
+**With Docker (recommended):**
 
-    - **Option A:** Set the `DISCORD_KEY` environment variable (no .env file required):
-      ```bash
-      export DISCORD_KEY=your-discord-bot-token   # Linux/macOS
-      set DISCORD_KEY=your-discord-bot-token      # Windows cmd
-      $env:DISCORD_KEY="your-discord-bot-token"   # PowerShell
-      ```
-    - **Option B:** Create a `.env` file in the root directory (or use `-env path`):
-      ```env
-      DISCORD_KEY=your-discord-bot-token
-      ```
-      If no `-env` flag is given, the bot will try to load `.env` from the current working directory; if the file is missing, it will use environment variables instead.
+```bash
+docker compose up -d
+```
 
-4. **Run the bot:**
+The database is stored in a Docker volume (`purgebot-data`). Logs: `docker compose logs -f purgebot`.
 
-    ```bash
-    go run main.go
-    ```
+**Without Docker:**
 
-    **Command-line options:**
-    
-    - `-env` (or `-env-file`): Path to `.env` file. If omitted or empty, the bot tries to load `.env` from the current working directory; if that file is missing, it uses existing environment variables (e.g. `DISCORD_KEY`). No .env file is required if `DISCORD_KEY` is already set in the environment.
-      ```bash
-      go run main.go -env /path/to/.env
-      ```
-    
-    - `-db`: Path to database file. Defaults to `database.db`. This overrides the `DB_PATH` environment variable if set.
-      ```bash
-      go run main.go -db /var/data/purge.db
-      ```
-    
-    - `-log-level`: Log level: `debug`, `info`, `warn`, `error`. Default: `info`. At `debug`, incoming messages and per-message deletions are logged; at `info` and above only task changes, errors, and thread cleanup summaries are logged.
-    
-    - `-log-format`: Log format: `text` or `json`. Default: `text`. Use `json` for structured logs (e.g. for log aggregation).
-    
-    - `-log-file`: Optional path to a log file. When set, logs are written to this file with size-based rotation (100 MB max, 3 backups, 28-day retention, compressed). If omitted, logs go to stderr.
-    
-    **Examples:**
-    
-    ```bash
-    # Use custom .env file location
-    go run main.go -env /etc/purgebot/.env
-    
-    # Use custom database path
-    go run main.go -db /var/lib/purgebot/purge.db
-    
-    # Use both custom .env and database paths
-    go run main.go -env /etc/purgebot/.env -db /var/lib/purgebot/purge.db
-    ```
+```bash
+go mod tidy
+go run ./cmd/purgebot
+```
+
+You can set `DISCORD_KEY` in the environment instead of using `.env`, or use a `.env` file in the current directory (or `-env /path/to/.env`).
+
+### Command-line options (binary only)
+
+When running the binary directly (not Docker):
+
+- `-env`: Path to `.env` file. If omitted, the bot loads `.env` from the current working directory or uses environment variables.
+- `-db`: Path to database file. Default: `database.db`.
+- `-log-level`: `debug`, `info`, `warn`, `error`. Default: `info`.
+- `-log-format`: `text` or `json`. Default: `text`.
+- `-log-file`: Optional log file path (size-based rotation).
+
+Examples:
+
+```bash
+go run ./cmd/purgebot -env /etc/purgebot/.env
+go run ./cmd/purgebot -db /var/lib/purgebot/purge.db
+```
+
+## Docker Compose
+
+Run PurgeBot with Docker (same pattern as the root `docker-compose.yml`):
+
+```yaml
+services:
+  purgebot:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - purgebot-data:/data
+    env_file: .env
+
+volumes:
+  purgebot-data:
+```
+
+The database is stored in the `purgebot-data` volume. Use `cp .env.example .env` and set `DISCORD_KEY` before `docker compose up -d`.
 
 ## 🧪 Testing
 

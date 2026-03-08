@@ -1,5 +1,4 @@
 /dist
 /tools
 .env
-database.db
 *.exe

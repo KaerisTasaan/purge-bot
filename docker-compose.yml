@@ -1,0 +1,10 @@
+services:
+  purgebot:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - purgebot-data:/data
+    env_file: .env
+
+volumes:
+  purgebot-data:

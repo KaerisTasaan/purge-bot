@@ -6,6 +6,8 @@ project_name: purgebot
 builds:
   - id: purgebot
     main: ./cmd/purgebot
+    env:
+      - CGO_ENABLED=0
     ldflags:
       - -X github.com/keshon/purge-bot/internal/version.Version={{.Version}}
     goos:
